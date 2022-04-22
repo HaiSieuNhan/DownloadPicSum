@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -9,15 +10,9 @@ namespace DownloadPicSum
         static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-           var xxx = new PicSumDequeue();
-
-           await xxx.Start();
-
-            while (true)
-            {
-                Console.ReadKey();
-                Task.Delay(1000);
-            }
+            var picSumDequeue = new PicSumDequeue();
+            await picSumDequeue.Start();
+            Console.ReadKey();
         }
     }
 }

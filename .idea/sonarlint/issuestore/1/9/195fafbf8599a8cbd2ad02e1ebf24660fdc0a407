@@ -1,0 +1,12 @@
+
+ocsharpsquid:S3776a"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ı°“
+:csharpsquid:S1116Œ"Remove this empty statement.(ìŒ²ı
+7csharpsquid:S2933"Make '_isStop' 'readonly'.(æà‚Ú
+<csharpsquid:S2933"Make '_config' 'readonly'.(¸ïä•úÿÿÿÿ
+Ecsharpsquid:S2933"#Make '_imgResizeConfig' 'readonly'.(¿Ôòüÿÿÿÿ
+Fcsharpsquid:S2933")Make '_queueSplitedResizeImg' 'readonly'.(ª›¯²
+Icsharpsquid:S2933"'Make '_queueSplitedSaveImg' 'readonly'.(Ìô‹Öşÿÿÿÿ
+Gcsharpsquid:S1144"*Remove the unused private field '_cancel'.(Ëàµâ
+|csharpsquid:S4487"ZRemove this unread private field '_taskDownloadImg' or refactor the code to use its value.(é¡½Ìùÿÿÿÿ
+ucsharpsquid:S4487"XRemove this unread private field '_taskResizeImg' or refactor the code to use its value.(ÖÚü
+scsharpsquid:S4487"VRemove this unread private field '_taskSaveImg' or refactor the code to use its value.(ş¬»
