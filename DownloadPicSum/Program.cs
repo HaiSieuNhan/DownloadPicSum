@@ -1,18 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using SkiaSharp;
 
 namespace DownloadPicSum
 {
     class Program
     {
+        // static async Task Main(string[] args)
+        // {
+        //     Console.WriteLine("Hello World!");
+        //     var picSumDequeue = new PicSumDequeue();
+        //     await picSumDequeue.Start();
+        //     Console.ReadKey();
+        // }
+        
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            var picSumDequeue = new PicSumDequeue();
-            await picSumDequeue.Start();
-            Console.ReadKey();
+            var lstStr = new List<string>()
+            {
+                "Dao","Van","Hai","Ahihi","1","2","3","4"
+            };
+            
+            ActionBlock<string> actionBlock = new ActionBlock<string>(async (input) =>
+            {
+                Console.WriteLine(input +" : ThreaId =>" + Thread.CurrentThread.ManagedThreadId);
+
+            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 10 });
+
+            foreach (var x in lstStr)
+            {
+                Console.WriteLine($"Thread Id : "+ Thread.CurrentThread.ManagedThreadId);
+                await actionBlock.SendAsync(x);
+            }
+            actionBlock.Complete();
+           
+            await actionBlock.Completion;
         }
     }
 }
