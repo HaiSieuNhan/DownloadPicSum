@@ -12,35 +12,34 @@ namespace DownloadPicSum
 {
     class Program
     {
-        // static async Task Main(string[] args)
-        // {
-        //     Console.WriteLine("Hello World!");
-        //     var picSumDequeue = new PicSumDequeue();
-        //     await picSumDequeue.Start();
-        //     Console.ReadKey();
-        // }
-        
         static async Task Main(string[] args)
         {
-            var lstStr = new List<string>()
-            {
-                "Dao","Van","Hai","Ahihi","1","2","3","4"
-            };
-            
-            ActionBlock<string> actionBlock = new ActionBlock<string>(async (input) =>
-            {
-                Console.WriteLine(input +" : ThreaId =>" + Thread.CurrentThread.ManagedThreadId);
-
-            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 10 });
-
-            foreach (var x in lstStr)
-            {
-                Console.WriteLine($"Thread Id : "+ Thread.CurrentThread.ManagedThreadId);
-                await actionBlock.SendAsync(x);
-            }
-            actionBlock.Complete();
-           
-            await actionBlock.Completion;
+            Console.WriteLine("Hello World!");
+            var picSumDequeue = new PicSumDequeue();
+            await picSumDequeue.Start();
+            Console.ReadKey();
         }
+
+        //static async Task Main(string[] args)
+        //{
+        //    var lstStr = new List<string>()
+        //    {
+        //        "Dao","Van","Hai","Ahihi","1","2","3","4"
+        //    };
+
+        //    ActionBlock<string> actionBlock = new ActionBlock<string>(async (input) =>
+        //    {
+        //        Console.WriteLine(input +" : ThreaId => " + Thread.CurrentThread.ManagedThreadId);
+
+        //    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 10 });
+
+        //    foreach (var x in lstStr)
+        //    {
+        //        await actionBlock.SendAsync(x);
+        //    }
+        //    actionBlock.Complete();
+
+        //    await actionBlock.Completion;
+        //}
     }
 }

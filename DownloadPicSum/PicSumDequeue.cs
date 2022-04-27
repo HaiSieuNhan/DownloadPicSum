@@ -30,7 +30,8 @@ namespace DownloadPicSum
         {
             _isStop = false;
             _config = new DequeueWorkerConfig { BatchSize = 100 };
-            _imgResizeConfig = new SizeImgConfig { Width = 500, Height = 500, PathSave = "C:\\Users\\daoha\\OneDrive\\Desktop\\DownloadPicSum\\DownloadPicSum\\Img\\" };
+            //_imgResizeConfig = new SizeImgConfig { Width = 500, Height = 500, PathSave = "C:\\Users\\daoha\\OneDrive\\Desktop\\DownloadPicSum\\DownloadPicSum\\Img\\" };
+            _imgResizeConfig = new SizeImgConfig { Width = 200, Height = 300, PathSave = "C:\\Users\\daoha\\OneDrive\\Desktop\\DownloadPicSum\\DownloadPicSum\\Img\\" };
         }
         public async Task Start()
         {
@@ -117,11 +118,13 @@ namespace DownloadPicSum
                         if (datas.Count == 0) continue;
                         // if (datas.Count != _config.BatchSize) continue;
 
-                        var result = HandleResizeImg(datas);
+                        //var result = HandleResizeImg(datas);
 
-                        Console.WriteLine(result.IsCompleted
-                            ? $"**** All task HandleResizeImg start and finish: {result.IsCompleted}"
-                            : $"**** Waiting... HandleResizeImg");
+                        //Console.WriteLine(result.IsCompleted
+                        //    ? $"**** All task HandleResizeImg start and finish: {result.IsCompleted}"
+                        //    : $"**** Waiting... HandleResizeImg");
+
+                        HandleResizeImgUsingActionBlock(datas);
                     }
                     catch (Exception ex)
                     {
@@ -147,13 +150,14 @@ namespace DownloadPicSum
             //    _queueSplitedSaveImg.Enqueue(image);
             //}
 
+            //Parallel
             var timer = new Stopwatch();
             timer.Start();
             Console.WriteLine($"***** Watch Start HandleResizeImg: {timer.Elapsed:m\\:ss\\.fff}");
 
             var result = await Task.Run(() => Parallel.ForEach(
                                                     datas,
-                                                    new ParallelOptions { MaxDegreeOfParallelism = 10 },
+                                                    new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
                                                     s =>
                                                     {
                                                         var original = SkiaSharp.SKBitmap.Decode(s.Data)
@@ -170,6 +174,48 @@ namespace DownloadPicSum
             Console.WriteLine($"***** Watch End HandleResizeImg: {timer.Elapsed:m\\:ss\\.fff}");
             timer.Stop();
             return result;
+        }
+             private async Task HandleResizeImgUsingActionBlock(List<QueueResizeImg> datas)
+        {
+            //foreach (var item in datas)
+            //{
+            //    var original = SkiaSharp.SKBitmap.Decode(item.Data).Resize(new SKImageInfo(_imgResizeConfig.ResizedWidth, _imgResizeConfig.ResizedHeight), SKBitmapResizeMethod.Lanczos3); ;
+
+            //    var image = SKImage.FromBitmap(original).Encode(SKEncodedImageFormat.Png, 90);
+
+            //    _queueSplitedSaveImg.Enqueue(image);
+            //}
+
+            //Parallel
+            var timer = new Stopwatch();
+            timer.Start();
+            Console.WriteLine($"***** Watch Start HandleResizeImg: {timer.Elapsed:m\\:ss\\.fff}");
+
+            ActionBlock<QueueResizeImg> actionBlock = new ActionBlock<QueueResizeImg>(async (data) =>
+            {
+                var original = SkiaSharp.SKBitmap.Decode(data.Data)
+                                                            .Resize(
+                                                                new SKImageInfo(_imgResizeConfig.ResizedWidth,
+                                                                    _imgResizeConfig.ResizedHeight),
+                                                                Lanczos3);
+
+                var image = SKImage.FromBitmap(original).Encode(SKEncodedImageFormat.Png, 90);
+
+                _queueSplitedSaveImg.Enqueue(image);
+
+                Console.WriteLine("ThreaId => " + Thread.CurrentThread.ManagedThreadId);
+
+            }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = Environment.ProcessorCount });
+
+            foreach (var x in datas)
+            {
+                await actionBlock.SendAsync(x);
+            }
+            actionBlock.Complete();
+            await actionBlock.Completion;
+
+            Console.WriteLine($"***** Watch End HandleResizeImg: {timer.Elapsed:m\\:ss\\.fff}");
+            timer.Stop();
         }
 
         private Task<Task> HandleSaveFile()
@@ -207,7 +253,7 @@ namespace DownloadPicSum
                         await using var stream = new FileStream(pathSave, FileMode.Create, FileAccess.Write);
                         input.SaveTo(stream);
 
-                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4 });
+                    }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = Environment.ProcessorCount });
 
                     foreach (var x in lstSkData)
                     {
