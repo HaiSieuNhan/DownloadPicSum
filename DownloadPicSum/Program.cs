@@ -10,13 +10,12 @@ using SkiaSharp;
 
 namespace DownloadPicSum
 {
-    class Program
+    internal static class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var picSumDequeue = new PicSumDequeue();
-            await picSumDequeue.Start();
+            await new PicSumDequeue().Start();
             Console.ReadKey();
         }
 
