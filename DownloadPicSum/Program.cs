@@ -16,7 +16,12 @@ namespace DownloadPicSum
         {
             Console.WriteLine("Hello World!");
             await new PicSumDequeue().Start();
-            Console.ReadKey();
+            while (true)
+            {
+                //block main thread if u want to run console as services
+                await Task.Delay(500);
+                Console.WriteLine($"Main thread Run at: {DateTime.Now}");
+            }
         }
 
         //static async Task Main(string[] args)
